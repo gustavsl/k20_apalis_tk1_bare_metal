@@ -40,6 +40,7 @@
 #include "fsl_debug_console.h"
 #include "fsl_gpio.h"
 #include "fsl_dspi.h"
+#include "fsl_edma.h"
 
 void BOARD_ADCInit(void);
 void BOARD_SPIInitAsMaster(void);
@@ -50,7 +51,7 @@ void DSPI_SlaveUserCallback(SPI_Type *base, dspi_slave_handle_t *handle, status_
 
 // Defines
 #define N_SAMPLES 1
-#define N_BYTES 6 // 5 is used for sample, 1 is used for \t
+#define N_BYTES 1 // 5 is used for sample, 1 is used for \t
 
 // Globals
 dspi_master_handle_t g_m_handle; //global variable
@@ -77,6 +78,8 @@ int main(void) {
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 	BOARD_InitDebugConsole();
+	PRINTF("\033[2J"); // Limpa tela, em ANSI
+	PRINTF("\033[H");  // Cursor para home
 	PRINTF("\r -- Aloha from MK20DN512MC10 ADC-SPI V00 R00! \n");
 
 	//BOARD_ADCInit();
@@ -88,10 +91,11 @@ int main(void) {
 
 	// Fill transfer buffer
 	uint32_t local_counter = 0;
-	for (local_counter = 0; local_counter < N_SAMPLES*N_BYTES - 2; local_counter++){
+	/*for (local_counter = 0; local_counter < N_SAMPLES*N_BYTES - 2; local_counter++){
 		slaveSendBuffer[local_counter] = local_counter;
 	}
-	slaveSendBuffer[N_SAMPLES*N_BYTES - 1] = 9; // 9 for tab, 10 for line feed
+	slaveSendBuffer[N_SAMPLES*N_BYTES - 1] = 9; // 9 for tab, 10 for line feed*/
+	slaveSendBuffer[0] = 0xA;
 
 	local_counter = 0;
 	for(;;) { /* Infinite loop to avoid leaving the main function */
@@ -103,7 +107,7 @@ int main(void) {
 			GPIO_WritePinOutput(GPIOA, 5, 1);
 
 			SPITransferAsSlave();
-			//PRINTF("\r -- Alive! \n");
+			PRINTF("\r -- Alive! \n");
 			//GPIO_WritePinOutput(GPIOA, 5, 0);
 		}else if (local_counter == 20000){
 			local_counter = 0;
@@ -176,17 +180,15 @@ void SPITransferAsSlave(void){
 
 void DSPI_SlaveUserCallback(SPI_Type *base, dspi_slave_handle_t *handle, status_t status, void *isTransferCompleted){
 	PRINTF("\r -- This is DSPI slave call back. \n");
-	if (status == kStatus_Success)
-    {
-        __NOP();
-    }
-    else if (status == kStatus_DSPI_Error)
-    {
-        __NOP();
-    }
-    isTransferCompleted = true;
-    //*((bool *)isTransferCompleted) = true;
+	if (status == kStatus_Success){
+		__NOP();
+	}
+	else if (status == kStatus_DSPI_Error){
+		__NOP();
+	}
+	isTransferCompleted = true;
+	//*((bool *)isTransferCompleted) = true;
 
-    PRINTF("\r -- This is DSPI slave call back. \n");
+	PRINTF("\r -- This is DSPI slave call back. \n");
 }
 
