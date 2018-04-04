@@ -15,7 +15,8 @@ source/main.o: ../source/main.c \
  /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/MK20D10_features.h \
  /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers/fsl_clock.h \
  /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers/fsl_common.h \
- /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers/fsl_gpio.h
+ /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers/fsl_gpio.h \
+ /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers/fsl_dspi.h
 
 /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/board/board.h:
 
@@ -50,3 +51,5 @@ source/main.o: ../source/main.c \
 /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers/fsl_common.h:
 
 /home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers/fsl_gpio.h:
+
+/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers/fsl_dspi.h:

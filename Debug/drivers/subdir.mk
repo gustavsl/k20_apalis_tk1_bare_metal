@@ -12,6 +12,7 @@ C_SRCS += \
 ../drivers/fsl_crc.c \
 ../drivers/fsl_dac.c \
 ../drivers/fsl_dmamux.c \
+../drivers/fsl_dspi.c \
 ../drivers/fsl_edma.c \
 ../drivers/fsl_ewm.c \
 ../drivers/fsl_flash.c \
@@ -49,6 +50,7 @@ OBJS += \
 ./drivers/fsl_crc.o \
 ./drivers/fsl_dac.o \
 ./drivers/fsl_dmamux.o \
+./drivers/fsl_dspi.o \
 ./drivers/fsl_edma.o \
 ./drivers/fsl_ewm.o \
 ./drivers/fsl_flash.o \
@@ -86,6 +88,7 @@ C_DEPS += \
 ./drivers/fsl_crc.d \
 ./drivers/fsl_dac.d \
 ./drivers/fsl_dmamux.d \
+./drivers/fsl_dspi.d \
 ./drivers/fsl_edma.d \
 ./drivers/fsl_ewm.d \
 ./drivers/fsl_flash.d \
