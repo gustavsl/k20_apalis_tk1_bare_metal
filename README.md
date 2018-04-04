@@ -10,7 +10,7 @@ The [default firmware on the K20 MCU](http://git.toradex.com/cgit/freertos-torad
 
 A Linux Kernel driver abstracts the incoming SPI data from the K20 MCU and makes use of default Linux Kernel drivers (such as [Industrial I/O](https://wiki.analog.com/software/linux/docs/iio/iio) to provide seamsless access to the peripherals.
 
-## Why a bare metal firmware?
+## Why, though?
 
 The FreeRTOS approach is not feasible when trying to acquire high-speed data from peripherals such as the ADC. 
 
