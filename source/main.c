@@ -77,8 +77,8 @@ int main(void) {
 	BOARD_InitDebugConsole();
 	PRINTF("\r -- Aloha from MK20DN512MC10 ADC-SPI V00 R00\n");
 
-	BOARD_ADCInit();
-	PRINTF("\r -- ADC is initialized! \n");
+	//BOARD_ADCInit();
+	//PRINTF("\r -- ADC is initialized! \n");
 
 	// Init SPI as slave
 	BOARD_SPIInitAsSlave();
@@ -91,18 +91,22 @@ int main(void) {
 	}
 	slaveSendBuffer[N_SAMPLES*N_BYTES - 1] = 9; // 9 for tab, 10 for line feed
 
+	local_counter = 0;
 	for(;;) { /* Infinite loop to avoid leaving the main function */
 		local_counter++;
 		if (local_counter == 10000){
 			//GPIO_WritePinOutput(GPIOA, 5, 1);
 			//GPIO_WritePinOutput(GPIOA, 3, 1);
 			GPIO_WritePinOutput(GPIOA, 17, 1);
-			SPITransferAsSlave();
-		}else if (local_counter == 2000){
+			GPIO_WritePinOutput(GPIOA, 5, 1);
+			PRINTF("\r -- Alive! \n");
+			//SPITransferAsSlave();
+			//GPIO_WritePinOutput(GPIOA, 5, 0);
+		}else if (local_counter == 20000){
 			local_counter = 0;
 			//GPIO_WritePinOutput(GPIOA, 3, 0);
 			GPIO_WritePinOutput(GPIOA, 17, 0);
-			//GPIO_WritePinOutput(GPIOA, 5, 0);
+			GPIO_WritePinOutput(GPIOA, 5, 0);
 			PRINTF("\r -- Alive! \n");
 		}
 	}
@@ -137,20 +141,8 @@ void BOARD_SPIInitAsSlave(void){
 	slaveConfig.enableModifiedTimingFormat = false;
 	slaveConfig.samplePoint = kDSPI_SckToSin0Clock;
 
-	DSPI_SlaveInit(SPI2, &slaveConfig);
-	DSPI_SlaveTransferCreateHandle(SPI2, &g_s_handle, DSPI_SlaveUserCallback, NULL);
-
-
-	/*slaveXfer.txData      = slaveSendBuffer0;
-	slaveXfer.rxData      = slaveReceiveBuffer0;
-	slaveXfer.dataSize    = transfer_dataSize;
-	slaveXfer.configFlags = kDSPI_SlaveCtar0;
-	bool isTransferCompleted = false;
-	DSPI_SlaveTransferCreateHandle(SPI2, &g_s_handle, DSPI_SlaveUserCallback, &isTransferCompleted);
-	DSPI_SlaveTransferNonBlocking(&g_s_handle, &slaveXfer);*/
-
-
-
+	//DSPI_SlaveInit(SPI2, &slaveConfig);
+	//DSPI_SlaveTransferCreateHandle(SPI2, &g_s_handle, DSPI_SlaveUserCallback, NULL);
 
 }
 
