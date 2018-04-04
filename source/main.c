@@ -38,9 +38,7 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "fsl_debug_console.h"
-
-
-
+#include "fsl_gpio.h"
 
 /*!
  * @brief Application entry point.
@@ -51,11 +49,22 @@ int main(void) {
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 	BOARD_InitDebugConsole();
-	PRINTF("Apalis K20 Firmware\n");
+	PRINTF("\r -- Aloha from MK20DN512MC10 ADC-SPI V00 R00\n");
 
+	uint32_t local_counter = 0;
 	for(;;) { /* Infinite loop to avoid leaving the main function */
-		PRINTF("Estoy aqui.\n");
-		__asm("NOP"); /* something to use as a breakpoint stop while looping */
+		local_counter++;
+		if (local_counter == 1000){
+			//GPIO_WritePinOutput(GPIOA, 5, 1);
+			//GPIO_WritePinOutput(GPIOA, 3, 1);
+			GPIO_WritePinOutput(GPIOA, 17, 1);
+		}else if (local_counter == 2000){
+			local_counter = 0;
+			//GPIO_WritePinOutput(GPIOA, 3, 0);
+			GPIO_WritePinOutput(GPIOA, 17, 0);
+			//GPIO_WritePinOutput(GPIOA, 5, 0);
+			PRINTF("\r -- Alive! \n");
+		}
 	}
 }
 

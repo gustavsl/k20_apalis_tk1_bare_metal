@@ -47,38 +47,38 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-k20_main.bin \
+k20_apalis_tk1_bare_metal.bin \
 
 SECONDARY_SIZE += \
-k20_main.siz \
+k20_apalis_tk1_bare_metal.siz \
 
 
 # All Target
-all: k20_main.elf secondary-outputs
+all: k20_apalis_tk1_bare_metal.elf secondary-outputs
 
 # Tool invocations
-k20_main.elf: $(OBJS) $(USER_OBJS)
+k20_apalis_tk1_bare_metal.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C++ Linker'
-	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -O3 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -flto -Wall -Wextra  -g3 -T "../MK20DN512xxx10_flash.ld" -Xlinker --gc-sections -Wl,-Map,"k20_main.map" --specs=nano.specs -specs=nosys.specs -Xlinker -z -Xlinker muldefs -o "k20_main.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -O3 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -flto -Wall -Wextra  -g3 -T "../MK20DN512xxx10_flash.ld" -Xlinker --gc-sections -Wl,-Map,"k20_apalis_tk1_bare_metal.map" --specs=nano.specs -specs=nosys.specs -Xlinker -z -Xlinker muldefs -o "k20_apalis_tk1_bare_metal.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-k20_main.bin: k20_main.elf
+k20_apalis_tk1_bare_metal.bin: k20_apalis_tk1_bare_metal.elf
 	@echo 'Invoking: Cross ARM GNU Create Flash Image'
-	arm-none-eabi-objcopy -O binary "k20_main.elf"  "k20_main.bin"
+	arm-none-eabi-objcopy -O binary "k20_apalis_tk1_bare_metal.elf"  "k20_apalis_tk1_bare_metal.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-k20_main.siz: k20_main.elf
+k20_apalis_tk1_bare_metal.siz: k20_apalis_tk1_bare_metal.elf
 	@echo 'Invoking: Cross ARM GNU Print Size'
-	arm-none-eabi-size --format=berkeley "k20_main.elf"
+	arm-none-eabi-size --format=berkeley "k20_apalis_tk1_bare_metal.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(SECONDARY_SIZE)$(C++_DEPS)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(CC_DEPS)$(SECONDARY_FLASH)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS)$(S_UPPER_DEPS) k20_main.elf
+	-$(RM) $(SECONDARY_SIZE)$(C++_DEPS)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(CC_DEPS)$(SECONDARY_FLASH)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS)$(S_UPPER_DEPS) k20_apalis_tk1_bare_metal.elf
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)

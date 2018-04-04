@@ -48,8 +48,8 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.959743626" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.1302594668" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.340556141" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/CMSIS/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/CMSIS/Driver/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/Driver/Include"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.852998941" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
 							</tool>
@@ -59,16 +59,16 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.1026465758" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.59602908" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../startup"/>
-									<listOptionValue builtIn="false" value="../board"/>
-									<listOptionValue builtIn="false" value="../utilities"/>
-									<listOptionValue builtIn="false" value="../freertos/Source/portable/GCC/ARM_CM3"/>
-									<listOptionValue builtIn="false" value="../source"/>
-									<listOptionValue builtIn="false" value="../CMSIS"/>
-									<listOptionValue builtIn="false" value="../drivers"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/CMSIS/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/CMSIS/Driver/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/Driver/Include"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/startup"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/board"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/utilities"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/source"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers"/>
 								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files.893642571" name="Include files (-include)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files" useByScannerDiscovery="false"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.219491553" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.476692042" name="Cross ARM C++ Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler">
@@ -76,19 +76,14 @@
 									<listOptionValue builtIn="false" value="&quot;CPU_MK20DN512VLK10&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.506184444" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../freertos/Source/include"/>
-									<listOptionValue builtIn="false" value="../startup"/>
-									<listOptionValue builtIn="false" value="../board"/>
-									<listOptionValue builtIn="false" value="../utilities"/>
-									<listOptionValue builtIn="false" value="../freertos/Source/portable/GCC/ARM_CM3"/>
-									<listOptionValue builtIn="false" value="../source"/>
-									<listOptionValue builtIn="false" value="../CMSIS"/>
-									<listOptionValue builtIn="false" value="../drivers"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/usb_1.1.0/host}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/usb_1.1.0/osa}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/usb_1.1.0/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/CMSIS/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/k20_main/CMSIS/Driver/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/Driver/Include"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/startup"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/board"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/utilities"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/source"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS"/>
+									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1983367536" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
