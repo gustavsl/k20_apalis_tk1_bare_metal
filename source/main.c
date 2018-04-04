@@ -66,6 +66,8 @@ uint16_t transfer_dataSize = N_SAMPLES*N_BYTES;
 uint8_t slaveSendBuffer[N_SAMPLES*N_BYTES];
 uint8_t slaveReceiveBuffer[N_SAMPLES*N_BYTES];
 
+volatile bool isTransferCompleted = false;
+
 /*!
  * @brief Application entry point.
  */
@@ -75,7 +77,7 @@ int main(void) {
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 	BOARD_InitDebugConsole();
-	PRINTF("\r -- Aloha from MK20DN512MC10 ADC-SPI V00 R00\n");
+	PRINTF("\r -- Aloha from MK20DN512MC10 ADC-SPI V00 R00! \n");
 
 	//BOARD_ADCInit();
 	//PRINTF("\r -- ADC is initialized! \n");
@@ -99,15 +101,16 @@ int main(void) {
 			//GPIO_WritePinOutput(GPIOA, 3, 1);
 			GPIO_WritePinOutput(GPIOA, 17, 1);
 			GPIO_WritePinOutput(GPIOA, 5, 1);
-			PRINTF("\r -- Alive! \n");
-			//SPITransferAsSlave();
+
+			SPITransferAsSlave();
+			//PRINTF("\r -- Alive! \n");
 			//GPIO_WritePinOutput(GPIOA, 5, 0);
 		}else if (local_counter == 20000){
 			local_counter = 0;
 			//GPIO_WritePinOutput(GPIOA, 3, 0);
 			GPIO_WritePinOutput(GPIOA, 17, 0);
 			GPIO_WritePinOutput(GPIOA, 5, 0);
-			PRINTF("\r -- Alive! \n");
+			//PRINTF("\r -- Alive! \n");
 		}
 	}
 }
@@ -124,25 +127,24 @@ void BOARD_SPIInitAsMaster(void){
 }
 
 void BOARD_SPIInitAsSlave(void){
-	/*dspi_master_config_t  masterConfig;
-	DSPI_MasterGetDefaultConfig(&masterConfig);
-	DSPI_MasterInit(SPI2, &masterConfig, CLOCK_GetFreq(kCLOCK_CoreSysClk));
-	//DSPI_MasterTransferCreateHandle(SPI2, &g_m_handle, NULL, NULL);*/
-
 	dspi_slave_config_t  slaveConfig;
-	//DSPI_SlaveGetDefaultConfig(&slaveConfig);
-	/*Slave config*/
+	gpio_pin_config_t gpio_out_config = {
+				kGPIO_DigitalOutput, 0,
+		};
+	GPIO_PinInit(GPIOD, 11u, &gpio_out_config);
+
 	slaveConfig.whichCtar = kDSPI_Ctar0;
 	slaveConfig.ctarConfig.bitsPerFrame = 8;
 	slaveConfig.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
 	slaveConfig.ctarConfig.cpha = kDSPI_ClockPhaseSecondEdge;
-	slaveConfig.enableContinuousSCK = true;
-	slaveConfig.enableRxFifoOverWrite = false;
+	slaveConfig.enableContinuousSCK = false;
+	slaveConfig.enableRxFifoOverWrite = true;
 	slaveConfig.enableModifiedTimingFormat = false;
 	slaveConfig.samplePoint = kDSPI_SckToSin0Clock;
 
-	//DSPI_SlaveInit(SPI2, &slaveConfig);
-	//DSPI_SlaveTransferCreateHandle(SPI2, &g_s_handle, DSPI_SlaveUserCallback, NULL);
+	DSPI_SlaveInit(SPI2, &slaveConfig);
+	NVIC_SetPriority(SPI2_IRQn, 0U);
+	DSPI_SlaveTransferCreateHandle(SPI2, &g_s_handle, DSPI_SlaveUserCallback, NULL);
 
 }
 
@@ -161,15 +163,20 @@ void SPITransferAsMaster(void){
 }
 
 void SPITransferAsSlave(void){
+	int32_t received_msg = 0;
+
 	slaveXfer.txData      = slaveSendBuffer;
 	slaveXfer.rxData      = slaveReceiveBuffer;
 	slaveXfer.dataSize    = transfer_dataSize;
-	slaveXfer.configFlags = kDSPI_MasterCtar0 | kDSPI_MasterPcs0 ;
-	DSPI_SlaveTransferNonBlocking(SPI2, &g_s_handle, &slaveXfer);
+	slaveXfer.configFlags = kDSPI_SlaveCtar0;
+	isTransferCompleted = false;
+	received_msg = DSPI_SlaveTransferNonBlocking(SPI2, &g_s_handle, &slaveXfer);
+	//PRINTF("\r -- Received message: %i \n", received_msg);
 }
 
 void DSPI_SlaveUserCallback(SPI_Type *base, dspi_slave_handle_t *handle, status_t status, void *isTransferCompleted){
-    if (status == kStatus_Success)
+	PRINTF("\r -- This is DSPI slave call back. \n");
+	if (status == kStatus_Success)
     {
         __NOP();
     }
@@ -177,9 +184,9 @@ void DSPI_SlaveUserCallback(SPI_Type *base, dspi_slave_handle_t *handle, status_
     {
         __NOP();
     }
+    isTransferCompleted = true;
+    //*((bool *)isTransferCompleted) = true;
 
-    *((bool *)isTransferCompleted) = true;
-
-    PRINTF("This is DSPI slave call back . \r\n");
+    PRINTF("\r -- This is DSPI slave call back. \n");
 }
 

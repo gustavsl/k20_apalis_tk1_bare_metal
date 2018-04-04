@@ -143,7 +143,8 @@ uint32_t DSPI_GetInstance(SPI_Type *base)
     uint32_t instance;
 
     /* Find the instance index from base address mappings. */
-    for (instance = 0; instance < FSL_FEATURE_SOC_DSPI_COUNT; instance++)
+    //for (instance = 0; instance < FSL_FEATURE_SOC_DSPI_COUNT; instance++)
+    for (instance = 0; instance < ARRAY_SIZE(s_dspiBases); instance++)
     {
         if (s_dspiBases[instance] == base)
         {
@@ -151,7 +152,8 @@ uint32_t DSPI_GetInstance(SPI_Type *base)
         }
     }
 
-    assert(instance < FSL_FEATURE_SOC_DSPI_COUNT);
+    assert(instance < ARRAY_SIZE(s_dspiBases));
+    //assert(instance < FSL_FEATURE_SOC_DSPI_COUNT);
 
     return instance;
 }
@@ -1214,24 +1216,25 @@ void DSPI_SlaveTransferCreateHandle(SPI_Type *base,
 
 status_t DSPI_SlaveTransferNonBlocking(SPI_Type *base, dspi_slave_handle_t *handle, dspi_transfer_t *transfer)
 {
-    assert(handle && transfer);
+	assert(handle);
+	assert(transfer);
 
     /* If receive length is zero */
     if (transfer->dataSize == 0)
     {
-        return kStatus_InvalidArgument;
+	return kStatus_InvalidArgument;
     }
 
     /* If both send buffer and receive buffer is null */
     if ((!(transfer->txData)) && (!(transfer->rxData)))
     {
-        return kStatus_InvalidArgument;
+	return kStatus_InvalidArgument;
     }
 
     /* Check that we're not busy.*/
     if (handle->state == kDSPI_Busy)
     {
-        return kStatus_DSPI_Busy;
+	return kStatus_DSPI_Busy;
     }
     handle->state = kDSPI_Busy;
 
@@ -1247,9 +1250,9 @@ status_t DSPI_SlaveTransferNonBlocking(SPI_Type *base, dspi_slave_handle_t *hand
 
     handle->errorCount = 0;
 
-    uint8_t whichCtar = (transfer->configFlags & DSPI_SLAVE_CTAR_MASK) >> DSPI_SLAVE_CTAR_SHIFT;
-    handle->bitsPerFrame =
-        (((base->CTAR_SLAVE[whichCtar]) & SPI_CTAR_SLAVE_FMSZ_MASK) >> SPI_CTAR_SLAVE_FMSZ_SHIFT) + 1;
+    //uint8_t whichCtar = (transfer->configFlags & DSPI_SLAVE_CTAR_MASK) >> DSPI_SLAVE_CTAR_SHIFT;
+    handle->bitsPerFrame = 8;
+	//(((base->CTAR_SLAVE[whichCtar]) & SPI_CTAR_SLAVE_FMSZ_MASK) >> SPI_CTAR_SLAVE_FMSZ_SHIFT) + 1;
 
     DSPI_StopTransfer(base);
 
@@ -1268,13 +1271,13 @@ status_t DSPI_SlaveTransferNonBlocking(SPI_Type *base, dspi_slave_handle_t *hand
 
     if (handle->rxData)
     {
-        /* RX FIFO overflow request enable */
-        DSPI_EnableInterrupts(base, kDSPI_RxFifoOverflowInterruptEnable);
+	/* RX FIFO overflow request enable */
+	DSPI_EnableInterrupts(base, kDSPI_RxFifoOverflowInterruptEnable);
     }
     if (handle->txData)
     {
-        /* TX FIFO underflow request enable */
-        DSPI_EnableInterrupts(base, kDSPI_TxFifoUnderflowInterruptEnable);
+	/* TX FIFO underflow request enable */
+	DSPI_EnableInterrupts(base, kDSPI_TxFifoUnderflowInterruptEnable);
     }
 
     return kStatus_Success;
