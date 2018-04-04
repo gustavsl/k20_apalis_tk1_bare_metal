@@ -59,14 +59,14 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.1026465758" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.59602908" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/Driver/Include"/>
-									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS/Include"/>
-									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/startup"/>
-									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/board"/>
-									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/utilities"/>
-									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/source"/>
-									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/CMSIS"/>
-									<listOptionValue builtIn="false" value="/home/favero/workspace.kds/k20_apalis_tk1_bare_metal/drivers"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/CMSIS/Driver/Include"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/startup"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/board"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/utilities"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/source"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/CMSIS"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/drivers"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files.893642571" name="Include files (-include)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files" useByScannerDiscovery="false"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.219491553" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>

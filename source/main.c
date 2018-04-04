@@ -98,7 +98,7 @@ int main(void) {
 			//GPIO_WritePinOutput(GPIOA, 3, 1);
 			GPIO_WritePinOutput(GPIOA, 17, 1);
 			SPITransferAsSlave();
-		}else if (local_counter == 2000){
+		}else if (local_counter == 20000){
 			local_counter = 0;
 			//GPIO_WritePinOutput(GPIOA, 3, 0);
 			GPIO_WritePinOutput(GPIOA, 17, 0);
