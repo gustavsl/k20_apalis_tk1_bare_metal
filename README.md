@@ -6,7 +6,7 @@ The Tegra K1 SoC features a quad-core Cortex-A15 CPU and a NVIDIA Kepler GPU wit
 
 The Apalis TK1 Computer-on-Module features a [NXP Kinetis K20 (MK20DN512VMC10)](https://www.nxp.com/products/processors-and-microcontrollers/arm-based-processors-and-mcus/kinetis-cortex-m-mcus/k-seriesperformancem4/k2x-usb/kinetis-k20-100-mhz-full-speed-usb-mixed-signal-integration-microcontrollers-based-on-arm-cortex-m4-core:K20_100) companion MCU connected to the Tegra K1 SoC to provide additional peripherals (ADC, CAN, Touch screen controller).
 
-The [default firmware on the K20 MCU](http://git.toradex.com/cgit/freertos-toradex.git/log/?h=apalis-tk1-k20-freertos-v9) is based on FreeRTOS and acts as a intermediate layer between the K20 hardware and the Linux drivers, gathering peripheral data on assigned tasks and sending the information via SPI to the Tegra K1.
+The [default firmware on the K20 MCU](http://git.toradex.com/cgit/freertos-toradex.git/log/?h=apalis-tk1-k20-freertos-v9) is based on FreeRTOS and acts as an intermediate layer between the K20 hardware and the Linux drivers, gathering peripheral data on assigned tasks and sending the information via SPI to the Tegra K1.
 
 A Linux Kernel driver abstracts the incoming SPI data from the K20 MCU and makes use of default Linux Kernel drivers (such as [Industrial I/O](https://wiki.analog.com/software/linux/docs/iio/iio) to provide seamsless access to the peripherals.
 
