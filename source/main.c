@@ -46,7 +46,7 @@ void BOARD_ADCInit(void);
 void BOARD_SPIInitAsMaster(void);
 void BOARD_SPIInitAsSlave(void);
 void SPITransferAsMaster(void);
-void SPITransferAsSlave(void);
+int SPITransferAsSlave(void);
 void DSPI_SlaveUserCallback(SPI_Type *base, dspi_slave_handle_t *handle, status_t status, void *isTransferCompleted);
 
 // Defines
@@ -97,6 +97,7 @@ int main(void) {
 	slaveSendBuffer[N_SAMPLES*N_BYTES - 1] = 9; // 9 for tab, 10 for line feed*/
 	slaveSendBuffer[0] = 0xA;
 
+	int ret_code = 0;
 	local_counter = 0;
 	for(;;) { /* Infinite loop to avoid leaving the main function */
 		local_counter++;
@@ -106,8 +107,8 @@ int main(void) {
 			GPIO_WritePinOutput(GPIOA, 17, 1);
 			GPIO_WritePinOutput(GPIOA, 5, 1);
 
-			SPITransferAsSlave();
-			PRINTF("\r -- Alive! \n");
+			ret_code = SPITransferAsSlave();
+			PRINTF("\r -- Return code is: %d \n", ret_code);
 			//GPIO_WritePinOutput(GPIOA, 5, 0);
 		}else if (local_counter == 20000){
 			local_counter = 0;
@@ -166,15 +167,16 @@ void SPITransferAsMaster(void){
 	DSPI_MasterTransferBlocking(SPI2, &masterXfer);
 }
 
-void SPITransferAsSlave(void){
-	int32_t received_msg = 0;
+int SPITransferAsSlave(void){
+	int32_t spi_return_code = 0;
 
 	slaveXfer.txData      = slaveSendBuffer;
 	slaveXfer.rxData      = slaveReceiveBuffer;
 	slaveXfer.dataSize    = transfer_dataSize;
 	slaveXfer.configFlags = kDSPI_SlaveCtar0;
 	isTransferCompleted = false;
-	received_msg = DSPI_SlaveTransferNonBlocking(SPI2, &g_s_handle, &slaveXfer);
+	spi_return_code = DSPI_SlaveTransferNonBlocking(SPI2, &g_s_handle, &slaveXfer);
+	return spi_return_code;
 	//PRINTF("\r -- Received message: %i \n", received_msg);
 }
 
