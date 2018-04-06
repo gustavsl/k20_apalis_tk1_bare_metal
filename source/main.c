@@ -39,158 +39,73 @@
 #include "clock_config.h"
 #include "fsl_debug_console.h"
 #include "fsl_gpio.h"
-#include "fsl_dspi.h"
-#include "fsl_edma.h"
-
-void BOARD_ADCInit(void);
-void BOARD_SPIInitAsMaster(void);
-void BOARD_SPIInitAsSlave(void);
-void SPITransferAsMaster(void);
-int SPITransferAsSlave(void);
-void DSPI_SlaveUserCallback(SPI_Type *base, dspi_slave_handle_t *handle, status_t status, void *isTransferCompleted);
+#include "fsl_adc16.h"
+#include "fsl_uart.h"
 
 // Defines
-#define N_SAMPLES 1
-#define N_BYTES 1 // 5 is used for sample, 1 is used for \t
+#define ADC16_BASE ADC0
+#define ADC16_CHANNEL_GROUP 0U
+#define ADC16_USER_CHANNEL 10U /* PTA7, ADC0_SE10 */
+
+#define ADC16_IRQn ADC0_IRQn
+#define ADC16_IRQ_HANDLER_FUNC ADC0_IRQHandler
 
 // Globals
-dspi_master_handle_t g_m_handle; //global variable
-dspi_slave_handle_t g_s_handle;//global variable
+volatile bool g_Adc16ConversionDoneFlag = false;
+volatile uint32_t g_Adc16ConversionValue;
+volatile uint32_t g_Adc16InterruptCounter;
 
-dspi_transfer_t masterXfer;
-dspi_transfer_t slaveXfer;
-
-uint8_t masterSendBuffer[N_SAMPLES*N_BYTES];
-uint8_t masterReceiveBuffer[N_SAMPLES*N_BYTES];
-uint16_t transfer_dataSize = N_SAMPLES*N_BYTES;
-
-uint8_t slaveSendBuffer[N_SAMPLES*N_BYTES];
-uint8_t slaveReceiveBuffer[N_SAMPLES*N_BYTES];
-
-volatile bool isTransferCompleted = false;
-
+void ADC16_IRQ_HANDLER_FUNC(void)
+{
+    g_Adc16ConversionDoneFlag = true;
+    /* Read conversion result to clear the conversion completed flag. */
+    g_Adc16ConversionValue = ADC16_GetChannelConversionValue(ADC16_BASE, ADC16_CHANNEL_GROUP);
+    g_Adc16InterruptCounter++;
+}
 /*!
  * @brief Application entry point.
  */
 int main(void) {
 
-	/* Init board hardware. */
-	BOARD_InitPins();
-	BOARD_BootClockRUN();
-	BOARD_InitDebugConsole();
-	PRINTF("\033[2J"); // Limpa tela, em ANSI
-	PRINTF("\033[H");  // Cursor para home
-	PRINTF("\r -- Aloha from MK20DN512MC10 ADC-SPI V00 R00! \n");
+    adc16_config_t adc16ConfigStruct;
+    adc16_channel_config_t adc16ChannelConfigStruct;
+    /* Init board hardware. */
+    BOARD_InitPins();
+    BOARD_BootClockRUN();
+    BOARD_InitDebugConsole();
+    EnableIRQ(ADC16_IRQn);
 
-	//BOARD_ADCInit();
-	//PRINTF("\r -- ADC is initialized! \n");
+    PRINTF("\r\nADC16 interrupt Example.\r\n");
 
-	// Init SPI as slave
-	BOARD_SPIInitAsSlave();
-	PRINTF("\r -- SPI is initialized! \n");
+    ADC16_GetDefaultConfig(&adc16ConfigStruct);
+    ADC16_Init(ADC16_BASE, &adc16ConfigStruct);
+    ADC16_EnableHardwareTrigger(ADC16_BASE, false); /* Make sure the software trigger is used. */
 
-	// Fill transfer buffer
-	uint32_t local_counter = 0;
-	/*for (local_counter = 0; local_counter < N_SAMPLES*N_BYTES - 2; local_counter++){
-		slaveSendBuffer[local_counter] = local_counter;
-	}
-	slaveSendBuffer[N_SAMPLES*N_BYTES - 1] = 9; // 9 for tab, 10 for line feed*/
-	slaveSendBuffer[0] = 0xA;
+    adc16ChannelConfigStruct.channelNumber = ADC16_USER_CHANNEL;
+    adc16ChannelConfigStruct.enableInterruptOnConversionCompleted = true; /* Enable the interrupt. */
 
-	int ret_code = 0;
-	local_counter = 0;
-	for(;;) { /* Infinite loop to avoid leaving the main function */
-		local_counter++;
-		if (local_counter == 10000){
-			//GPIO_WritePinOutput(GPIOA, 5, 1);
-			//GPIO_WritePinOutput(GPIOA, 3, 1);
-			GPIO_WritePinOutput(GPIOA, 17, 1);
-			GPIO_WritePinOutput(GPIOA, 5, 1);
+    g_Adc16InterruptCounter = 0U;
 
-			ret_code = SPITransferAsSlave();
-			PRINTF("\r -- Return code is: %d \n", ret_code);
-			//GPIO_WritePinOutput(GPIOA, 5, 0);
-		}else if (local_counter == 20000){
-			local_counter = 0;
-			//GPIO_WritePinOutput(GPIOA, 3, 0);
-			GPIO_WritePinOutput(GPIOA, 17, 0);
-			GPIO_WritePinOutput(GPIOA, 5, 0);
-			//PRINTF("\r -- Alive! \n");
-		}
-	}
-}
-
-void BOARD_ADCInit(void){
-
-}
-
-void BOARD_SPIInitAsMaster(void){
-	dspi_master_config_t  masterConfig;
-	DSPI_MasterGetDefaultConfig(&masterConfig);
-	DSPI_MasterInit(SPI2, &masterConfig, CLOCK_GetFreq(kCLOCK_CoreSysClk));
-	//DSPI_MasterTransferCreateHandle(SPI2, &g_m_handle, NULL, NULL);
-}
-
-void BOARD_SPIInitAsSlave(void){
-	dspi_slave_config_t  slaveConfig;
-	gpio_pin_config_t gpio_out_config = {
-				kGPIO_DigitalOutput, 0,
-		};
-	GPIO_PinInit(GPIOD, 11u, &gpio_out_config);
-
-	slaveConfig.whichCtar = kDSPI_Ctar0;
-	slaveConfig.ctarConfig.bitsPerFrame = 8;
-	slaveConfig.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
-	slaveConfig.ctarConfig.cpha = kDSPI_ClockPhaseSecondEdge;
-	slaveConfig.enableContinuousSCK = false;
-	slaveConfig.enableRxFifoOverWrite = true;
-	slaveConfig.enableModifiedTimingFormat = false;
-	slaveConfig.samplePoint = kDSPI_SckToSin0Clock;
-
-	DSPI_SlaveInit(SPI2, &slaveConfig);
-	NVIC_SetPriority(SPI2_IRQn, 0U);
-	DSPI_SlaveTransferCreateHandle(SPI2, &g_s_handle, DSPI_SlaveUserCallback, NULL);
-
-}
-
-void SPITransferAsMaster(void){
-	uint16_t local_counter = 0;
-	for (local_counter = 0; local_counter < N_SAMPLES*N_BYTES - 2; local_counter++){
-		masterSendBuffer[local_counter] = local_counter;
-	}
-	masterSendBuffer[N_SAMPLES*N_BYTES - 1] = 9; // 9 for tab, 10 for line feed
-
-	masterXfer.txData      = masterSendBuffer;
-	masterXfer.rxData      = masterReceiveBuffer;
-	masterXfer.dataSize    = transfer_dataSize;
-	masterXfer.configFlags = kDSPI_MasterCtar0 | kDSPI_MasterPcs0 ;
-	DSPI_MasterTransferBlocking(SPI2, &masterXfer);
-}
-
-int SPITransferAsSlave(void){
-	int32_t spi_return_code = 0;
-
-	slaveXfer.txData      = slaveSendBuffer;
-	slaveXfer.rxData      = slaveReceiveBuffer;
-	slaveXfer.dataSize    = transfer_dataSize;
-	slaveXfer.configFlags = kDSPI_SlaveCtar0;
-	isTransferCompleted = false;
-	spi_return_code = DSPI_SlaveTransferNonBlocking(SPI2, &g_s_handle, &slaveXfer);
-	return spi_return_code;
-	//PRINTF("\r -- Received message: %i \n", received_msg);
-}
-
-void DSPI_SlaveUserCallback(SPI_Type *base, dspi_slave_handle_t *handle, status_t status, void *isTransferCompleted){
-	PRINTF("\r -- This is DSPI slave call back. \n");
-	if (status == kStatus_Success){
-		__NOP();
-	}
-	else if (status == kStatus_DSPI_Error){
-		__NOP();
-	}
-	isTransferCompleted = true;
-	//*((bool *)isTransferCompleted) = true;
-
-	PRINTF("\r -- This is DSPI slave call back. \n");
+    while (1)
+    {
+        //GETCHAR();
+        g_Adc16ConversionDoneFlag = false;
+        /*
+         When in software trigger mode, each conversion would be launched once calling the "ADC16_ChannelConfigure()"
+         function, which works like writing a conversion command and executing it. For another channel's conversion,
+         just to change the "channelNumber" field in channel configuration structure, and call the function
+         "ADC16_ChannelConfigure()"" again.
+         Also, the "enableInterruptOnConversionCompleted" inside the channel configuration structure is a parameter for
+         the conversion command. It takes affect just for the current conversion. If the interrupt is still required
+         for the following conversion, it is necessary to assert the "enableInterruptOnConversionCompleted" every time
+         for each command.
+        */
+        ADC16_SetChannelConfig(ADC16_BASE, ADC16_CHANNEL_GROUP, &adc16ChannelConfigStruct);
+        while (!g_Adc16ConversionDoneFlag)
+        {
+        }
+        PRINTF("ADC Value: %d\r\n", g_Adc16ConversionValue);
+        PRINTF("ADC Interrupt Count: %d\r\n", g_Adc16InterruptCounter);
+    }
 }
 
