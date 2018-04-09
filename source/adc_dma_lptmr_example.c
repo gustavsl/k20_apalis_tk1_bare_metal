@@ -42,6 +42,7 @@
 /* TODO: insert other include files here. */
 #include "fsl_adc16.h"
 #include "fsl_lptmr.h"
+#include "fsl_pit.h"
 #include "fsl_dmamux.h"
 #include "fsl_edma.h"
 
@@ -137,7 +138,7 @@ int main(void)
 	/****************************************
 	 * LPTMR for ADC HW trigger Config
 	 ****************************************/
-	lptmr_config_t lptmrConfig;
+	pit_config_t pitConfig;
 	/*
 	 * lptmrConfig.timerMode = kLPTMR_TimerModeTimeCounter;
 	 * lptmrConfig.pinSelect = kLPTMR_PinSelectInput_0;
@@ -147,19 +148,17 @@ int main(void)
 	 * lptmrConfig.prescalerClockSource = kLPTMR_PrescalerClock_1;
 	 * lptmrConfig.value = kLPTMR_Prescale_Glitch_0;
 	 */
-	LPTMR_GetDefaultConfig(&lptmrConfig);
-	lptmrConfig.bypassPrescaler = false;
-	lptmrConfig.prescalerClockSource = kLPTMR_PrescalerClock_1;
+	PIT_GetDefaultConfig(&pitConfig);
 
 	/* Initialize the LPTMR */
-	LPTMR_Init(LPTMR0, &lptmrConfig);
+	PIT_Init(PIT, &pitConfig);
 
 	/* Set the LPTimer period */
-	LPTMR_SetTimerPeriod( LPTMR0,
-			USEC_TO_COUNT(2000, CLOCK_GetFreq(kCLOCK_LpoClk)));
+	PIT_SetTimerPeriod( PIT, kPIT_Chnl_0,
+			USEC_TO_COUNT(200, CLOCK_GetFreq(kCLOCK_CoreSysClk)));
 
 	/* Configure SIM for ADC hw trigger source selection */
-	SIM->SOPT7 |= 0x8EU;
+	SIM->SOPT7 |= 0x84U;
 
 	/****************************************
 	 * DMA Config
@@ -230,7 +229,7 @@ int main(void)
 	EDMA_StartTransfer(&g_EDMA_Handle_1);
 
 	/* Start the LPTimer */
-	LPTMR_StartTimer( LPTMR0);
+	PIT_StartTimer(PIT, kPIT_Chnl_0);
 
 	uint8_t i = 0;
 	PRINTF(
