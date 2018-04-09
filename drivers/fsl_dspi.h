@@ -50,7 +50,7 @@
 
 #ifndef DSPI_DUMMY_DATA
 /*! @brief DSPI dummy data if there is no Tx data.*/
-#define DSPI_DUMMY_DATA (0xBBU) /*!< Dummy data used for Tx if there is no txData. */
+#define DSPI_DUMMY_DATA (0x00U) /*!< Dummy data used for Tx if there is no txData. */
 #endif
 
 /*! @brief Status for the DSPI driver.*/

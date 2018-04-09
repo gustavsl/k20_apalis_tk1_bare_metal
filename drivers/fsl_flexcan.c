@@ -392,7 +392,7 @@ static void FLEXCAN_Reset(CAN_Type *base)
     }
 }
 
-void FLEXCAN_SetBaudRate(CAN_Type *base, uint32_t sourceClock_Hz, uint32_t baudRate_Bps)
+static void FLEXCAN_SetBaudRate(CAN_Type *base, uint32_t sourceClock_Hz, uint32_t baudRate_Bps)
 {
     flexcan_timing_config_t timingConfig;
     uint32_t priDiv = baudRate_Bps * FLEXCAN_TIME_QUANTA_NUM;
@@ -402,19 +402,18 @@ void FLEXCAN_SetBaudRate(CAN_Type *base, uint32_t sourceClock_Hz, uint32_t baudR
     /* Assertion: Source clock should greater than baud rate * FLEXCAN_TIME_QUANTA_NUM. */
     assert(priDiv <= sourceClock_Hz);
 
-
     if (0 == priDiv)
     {
         priDiv = 1;
     }
 
     priDiv = (sourceClock_Hz / priDiv) - 1;
+
     /* Desired baud rate is too low. */
     if (priDiv > 0xFF)
     {
         priDiv = 0xFF;
     }
-
 
     /* FlexCAN timing setting formula:
      * FLEXCAN_TIME_QUANTA_NUM = 1 + (PSEG1 + 1) + (PSEG2 + 1) + (PROPSEG + 1);
@@ -551,17 +550,6 @@ void FLEXCAN_SetTimingConfig(CAN_Type *base, const flexcan_timing_config_t *conf
     base->CTRL1 |=
         (CAN_CTRL1_PRESDIV(config->preDivider) | CAN_CTRL1_RJW(config->rJumpwidth) |
          CAN_CTRL1_PSEG1(config->phaseSeg1) | CAN_CTRL1_PSEG2(config->phaseSeg2) | CAN_CTRL1_PROPSEG(config->propSeg));
-
-    /* Exit Freeze Mode. */
-    FLEXCAN_ExitFreezeMode(base);
-}
-
-void FLEXCAN_SetBitRate(CAN_Type *base, uint32_t sourceClock_Hz, uint32_t baudRate_Bps)
-{
-    /* Enter Freeze Mode. */
-    FLEXCAN_EnterFreezeMode(base);
-
-    FLEXCAN_SetBaudRate(base, sourceClock_Hz, baudRate_Bps);
 
     /* Exit Freeze Mode. */
     FLEXCAN_ExitFreezeMode(base);
@@ -769,7 +757,7 @@ void FLEXCAN_SetRxFifoConfig(CAN_Type *base, const flexcan_rx_fifo_config_t *con
         FLEXCAN_SetRxMbConfig(base, 4, NULL, false);
         FLEXCAN_SetRxMbConfig(base, 5, NULL, false);
     }
-    base->MCR |= CAN_MCR_SRXDIS_MASK;
+
     /* Exit Freeze Mode. */
     FLEXCAN_ExitFreezeMode(base);
 }
@@ -1281,7 +1269,6 @@ void FLEXCAN_TransferHandleIRQ(CAN_Type *base, flexcan_handle_t *handle)
                 /* Get current State of Message Buffer. */
                 switch (handle->mbState[result])
                 {
-#if 0
                     /* Solve Rx Data Frame. */
                     case kFLEXCAN_StateRxData:
                         status = FLEXCAN_ReadRxMb(base, result, handle->mbFrameBuf[result]);
@@ -1301,13 +1288,17 @@ void FLEXCAN_TransferHandleIRQ(CAN_Type *base, flexcan_handle_t *handle)
                         }
                         FLEXCAN_TransferAbortReceive(base, handle, result);
                         break;
-#endif
-                    /* Solve Tx Remote Frame. */
-                    case kFLEXCAN_StateTxRemote: /* fall through */
+
                     /* Solve Tx Data Frame. */
                     case kFLEXCAN_StateTxData:
                         status = kStatus_FLEXCAN_TxIdle;
                         FLEXCAN_TransferAbortSend(base, handle, result);
+                        break;
+
+                    /* Solve Tx Remote Frame. */
+                    case kFLEXCAN_StateTxRemote:
+                        handle->mbState[result] = kFLEXCAN_StateRxRemote;
+                        status = kStatus_FLEXCAN_TxSwitchToRx;
                         break;
 
                     default:
