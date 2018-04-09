@@ -69,7 +69,7 @@ void EDMA_Callback(edma_handle_t *handle, void *param, bool transferDone, uint32
  */
 int main(void)
 {
-    uint32_t srcAddr[BUFF_LENGTH] = {0x01, 0x02, 0x03, 0x04};
+    uint32_t srcAddr[BUFF_LENGTH] = {0x01,64F12 0x02, 0x03, 0x04};
     uint32_t destAddr[BUFF_LENGTH] = {0x00, 0x00, 0x00, 0x00};
     uint32_t i = 0;
     edma_transfer_config_t transferConfig;
