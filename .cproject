@@ -129,9 +129,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.475762548.989113627" name="adc_dma_lptmr_example.c" rcbsApplicability="disable" resourcePath="source/adc_dma_lptmr_example.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.195326104.2136130127">
-						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.195326104.2136130127" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.195326104"/>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="source/K64F_ADC_DMA_Demo.c|source/pdb_adc_example.c|source/adc_irq_example.c|source/edma_example.c|CMSIS/Driver/DriverTemplates|drivers/fsl_mpu.c|usb_1.1.0/osa/usb_osa_bm.c|usb_1.1.0/device|freertos/Source/portable/MemMang/heap_5.c|freertos/Source/portable/MemMang/heap_3.c|freertos/Source/portable/MemMang/heap_2.c|freertos/Source/portable/MemMang/heap_1.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>

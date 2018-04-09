@@ -46,7 +46,7 @@
 #include "fsl_edma.h"
 
 /* TODO: insert other definitions and declarations here. */
-#define B_SIZE           200u		/* Internal Buffer size */
+#define B_SIZE           400u		/* Internal Buffer size */
 #define CHANNELS         3u			/* Number of ADC channels*/
 
 #define VREFH_CH         29u		/*ADC Channels*/
@@ -59,7 +59,7 @@
 /* ADC Channels array */
 uint8_t g_ADC_mux[CHANNELS] = {VREFL_CH, VREFH_CH, CHANNEL_12};
 /* Internal ADC buffer */
-uint16_t g_ADC0_resultBuffer[B_SIZE + 4] = {0};
+uint16_t g_ADC0_resultBuffer[B_SIZE] = {0};
 
 /* Global Done flags*/
 volatile bool g_Adc16ConversionDoneFlag = false;
@@ -88,7 +88,7 @@ void EDMA_Callback_1(edma_handle_t *handle, void *param, bool transferDone,
 {
 	if(transferDone) {
 		/* If next line is uncommented, it will start again after 12 transfers finished */
-		//EDMA_StartTransfer(&g_EDMA_Handle_1);
+		EDMA_StartTransfer(&g_EDMA_Handle_1);
 		g_Transfer_Done_ch1 = true;
 	}
 }
@@ -154,7 +154,7 @@ int main(void)
 
 	/* Set the LPTimer period */
 	PIT_SetTimerPeriod( PIT, kPIT_Chnl_0,
-			USEC_TO_COUNT(10, CLOCK_GetFreq(kCLOCK_CoreSysClk)));
+			USEC_TO_COUNT(2, CLOCK_GetFreq(kCLOCK_CoreSysClk)));
 
 	/* Configure SIM for ADC hw trigger source selection */
 	SIM->SOPT7 |= 0x84U;
@@ -191,13 +191,13 @@ int main(void)
 	EDMA_SetCallback(&g_EDMA_Handle_1, EDMA_Callback_1, NULL);
 
 	EDMA_PrepareTransfer(&transferConfig_ch1, /* Prepare TCD for CH1 */
-	(uint32_t*)(ADC0->R), /* Source Address (ADC0_RA) */
-	sizeof(uint16_t), /* Source width (2 bytes) */
-	g_ADC0_resultBuffer, /* Destination Address (Internal buffer)*/
-	sizeof(g_ADC0_resultBuffer[0]), /* Destination width (2 bytes) */
-	sizeof(uint16_t), /* Bytes to transfer each minor loop (2 bytes) */
-	B_SIZE * 2, /* Total of bytes to transfer (12*2 bytes) */
-	kEDMA_PeripheralToMemory); /* From ADC to Memory */
+			(uint32_t*)(ADC0->R), /* Source Address (ADC0_RA) */
+			sizeof(uint16_t), /* Source width (2 bytes) */
+			g_ADC0_resultBuffer, /* Destination Address (Internal buffer)*/
+			sizeof(g_ADC0_resultBuffer[0]), /* Destination width (2 bytes) */
+			sizeof(uint16_t), /* Bytes to transfer each minor loop (2 bytes) */
+			B_SIZE * 2, /* Total of bytes to transfer (12*2 bytes) */
+			kEDMA_PeripheralToMemory); /* From ADC to Memory */
 	/* Push TCD for CH1 into hardware TCD Register */
 	EDMA_SubmitTransfer(&g_EDMA_Handle_1, &transferConfig_ch1);
 
@@ -211,13 +211,13 @@ int main(void)
 	EDMA_SetCallback(&g_EDMA_Handle_0, EDMA_Callback_0, NULL);
 
 	EDMA_PrepareTransfer(&transferConfig_ch0, /* Prepare TCD for CH0 */
-	&g_ADC_mux[0], /* Source Address (ADC channels array) */
-	sizeof(g_ADC_mux[0]), /* Source width (1 bytes) */
-	(uint32_t*)(ADC0->SC1),/* Destination Address (ADC_SC1A_ADCH)*/
-	sizeof(uint8_t), /* Destination width (1 bytes) */
-	sizeof(uint8_t), /* Bytes to transfer each minor loop (1 bytes) */
-	CHANNELS, /* Total of bytes to transfer (3*1 bytes) */
-	kEDMA_MemoryToPeripheral);/* From ADC channels array to ADCH register */
+			&g_ADC_mux[0], /* Source Address (ADC channels array) */
+			sizeof(g_ADC_mux[0]), /* Source width (1 bytes) */
+			(uint32_t*)(ADC0->SC1),/* Destination Address (ADC_SC1A_ADCH)*/
+			sizeof(uint8_t), /* Destination width (1 bytes) */
+			sizeof(uint8_t), /* Bytes to transfer each minor loop (1 bytes) */
+			CHANNELS, /* Total of bytes to transfer (3*1 bytes) */
+			kEDMA_MemoryToPeripheral);/* From ADC channels array to ADCH register */
 	/* Push TCD for CH0 into hardware TCD Register */
 	EDMA_SubmitTransfer(&g_EDMA_Handle_0, &transferConfig_ch0);
 
@@ -230,27 +230,29 @@ int main(void)
 	/* Start the LPTimer */
 	PIT_StartTimer(PIT, kPIT_Chnl_0);
 
-	uint8_t i = 0;
-	PRINTF(
-			"\r\nCHANNEL_12\t VREFL_CH\t VREFH_CH\r\n--------\t --------\t --------\t\r\n");
+	uint16_t i = 0;
+	//	PRINTF(
+	//			"\r\nCHANNEL_12\t VREFL_CH\t VREFH_CH\r\n--------\t --------\t --------\t\r\n");
 	while(1) {
 		if(g_Transfer_Done_ch0) {
-			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
-			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
-			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
-			PRINTF("\r\n");
-			g_Transfer_Done_ch0 = false;
+//			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
+//			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
+//			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
+//			PRINTF("\r\n");
+//
+//			g_Transfer_Done_ch0 = false;
 			if(g_Transfer_Done_ch1) {
 				i = 0;
-//
-//				for (i = 0; i < B_SIZE; i++) {
-//					PRINTF("%d \t\t", g_ADC0_resultBuffer[i]);
-//					PRINTF("%d \t\t", g_ADC0_resultBuffer[i+1]);
-//					PRINTF("%d \t\t", g_ADC0_resultBuffer[i+2]);
-//					PRINTF("\r\n");
-//				}
 				PRINTF("\r\nFinished\r\n");
+
+				for (i = 0; i < B_SIZE; i+2) {
+					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
+					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
+					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
+					PRINTF("\r\n");
+				}
 				g_Transfer_Done_ch1 = false;
+
 			}
 		}
 	}
