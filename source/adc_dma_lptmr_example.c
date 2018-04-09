@@ -41,14 +41,13 @@
 
 /* TODO: insert other include files here. */
 #include "fsl_adc16.h"
-#include "fsl_lptmr.h"
 #include "fsl_pit.h"
 #include "fsl_dmamux.h"
 #include "fsl_edma.h"
 
 /* TODO: insert other definitions and declarations here. */
-#define B_SIZE           24u		/* Internal Buffer size */
-#define CHANNELS         6u			/* Number of ADC channels*/
+#define B_SIZE           200u		/* Internal Buffer size */
+#define CHANNELS         3u			/* Number of ADC channels*/
 
 #define VREFH_CH         29u		/*ADC Channels*/
 #define VREFL_CH		 30u
@@ -155,7 +154,7 @@ int main(void)
 
 	/* Set the LPTimer period */
 	PIT_SetTimerPeriod( PIT, kPIT_Chnl_0,
-			USEC_TO_COUNT(200, CLOCK_GetFreq(kCLOCK_CoreSysClk)));
+			USEC_TO_COUNT(20, CLOCK_GetFreq(kCLOCK_CoreSysClk)));
 
 	/* Configure SIM for ADC hw trigger source selection */
 	SIM->SOPT7 |= 0x84U;
@@ -236,16 +235,20 @@ int main(void)
 			"\r\nCHANNEL_12\t VREFL_CH\t VREFH_CH\r\n--------\t --------\t --------\t\r\n");
 	while(1) {
 		if(g_Transfer_Done_ch0) {
-			PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
-			PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
-			PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
-			PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
-			PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
-			PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
+			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
+			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
+			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
 			PRINTF("\r\n");
 			g_Transfer_Done_ch0 = false;
 			if(g_Transfer_Done_ch1) {
 				i = 0;
+//
+//				for (i = 0; i < B_SIZE; i++) {
+//					PRINTF("%d \t\t", g_ADC0_resultBuffer[i]);
+//					PRINTF("%d \t\t", g_ADC0_resultBuffer[i+1]);
+//					PRINTF("%d \t\t", g_ADC0_resultBuffer[i+2]);
+//					PRINTF("\r\n");
+//				}
 				PRINTF("\r\nFinished\r\n");
 				g_Transfer_Done_ch1 = false;
 			}
