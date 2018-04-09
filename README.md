@@ -12,8 +12,6 @@ A Linux Kernel driver abstracts the incoming SPI data from the K20 MCU and makes
 
 ## Why, though?
 
-The FreeRTOS approach is not feasible when trying to acquire high-speed data from peripherals such as the ADC. 
-
-An interesting solution for these particular cases is to give up the Linux abstraction features provided by the RTOS firmware and implement an interrupt-driven bare metal application to capture data, store it e.g. in a buffer and send it via the SPI bus.
+A quick-and-dirty solution for these particular cases is to give up the Linux abstraction features provided by the RTOS firmware and implement an interrupt-driven bare metal application to capture data, store it e.g. in a buffer and send it via the SPI bus.
 
 This project is based on the repository for the default Toradex K20 FreeRTOS firmware linked above. It is based on the Kinetis SDK V2.0.
