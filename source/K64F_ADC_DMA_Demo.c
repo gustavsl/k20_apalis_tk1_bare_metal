@@ -156,7 +156,7 @@ int main(void)
 	LPTMR_Init(LPTMR0, &lptmrConfig);
 
 	/* Set the LPTimer period */
-	LPTMR_SetTimerPeriod( LPTMR0,USEC_TO_COUNT(200000, CLOCK_GetFreq(kCLOCK_LpoClk)));
+	LPTMR_SetTimerPeriod( LPTMR0,USEC_TO_COUNT(200, CLOCK_GetFreq(kCLOCK_LpoClk)));
 
 	/* Configure SIM for ADC hw trigger source selection */
 	SIM->SOPT7 |= 0x8EU;

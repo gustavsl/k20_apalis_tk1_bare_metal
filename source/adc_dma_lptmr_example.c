@@ -46,7 +46,7 @@
 #include "fsl_edma.h"
 
 /* TODO: insert other definitions and declarations here. */
-#define B_SIZE           12u		/* Internal Buffer size */
+#define B_SIZE           200u		/* Internal Buffer size */
 #define CHANNELS         3u			/* Number of ADC channels*/
 
 #define VREFH_CH         29u		/*ADC Channels*/
@@ -88,7 +88,7 @@ void EDMA_Callback_1(edma_handle_t *handle, void *param, bool transferDone,
 {
 	if(transferDone) {
 		/* If next line is uncommented, it will start again after 12 transfers finished */
-		EDMA_StartTransfer(&g_EDMA_Handle_1);
+		//EDMA_StartTransfer(&g_EDMA_Handle_1);
 		g_Transfer_Done_ch1 = true;
 	}
 }
@@ -154,7 +154,7 @@ int main(void)
 
 	/* Set the LPTimer period */
 	PIT_SetTimerPeriod( PIT, kPIT_Chnl_0,
-			USEC_TO_COUNT(100000, CLOCK_GetFreq(kCLOCK_CoreSysClk)));
+			USEC_TO_COUNT(10, CLOCK_GetFreq(kCLOCK_CoreSysClk)));
 
 	/* Configure SIM for ADC hw trigger source selection */
 	SIM->SOPT7 |= 0x84U;
