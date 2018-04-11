@@ -502,8 +502,6 @@ void FLEXCAN_GetDefaultConfig(flexcan_config_t *config);
  */
 void FLEXCAN_SetTimingConfig(CAN_Type *base, const flexcan_timing_config_t *config);
 
-void FLEXCAN_SetBitRate(CAN_Type *base, uint32_t sourceClock_Hz, uint32_t baudRate_Bps);
-
 /*!
  * @brief Sets the FlexCAN receive message buffer global mask.
  *

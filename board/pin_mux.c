@@ -80,11 +80,11 @@ void BOARD_InitPins(void)
 //	PORT_SetPinMux(PORTC, 17u, kPORT_MuxAlt2); /* CAN1 TX */
 //	PORT_SetPinMux(PORTC, 16u, kPORT_MuxAlt2); /* CAN1 RX */
 
-#ifdef SDK_DEBUGCONSOLE
+//#ifdef SDK_DEBUGCONSOLE
 	/* Debug UART3 pinmux config */
-	PORT_SetPinMux(PORTB, 3u, kPORT_MuxAlt3); /* UART2 TX */
-	PORT_SetPinMux(PORTC, 3u, kPORT_MuxAlt3); /* UART2 RX */
-#endif
+	PORT_SetPinMux(PORTE, 0u, kPORT_MuxAlt3); /* UART4 TX */
+	PORT_SetPinMux(PORTE, 1u, kPORT_MuxAlt3); /* UART4 RX */
+//#endif
 
 	/* Resistive Touch panel pinmux config */
 	//PORT_SetPinMux(PORTE, 6u, kPORT_MuxAsGpio);
@@ -142,5 +142,7 @@ void BOARD_InitPins(void)
 	}*/
 	PORT_SetPinMux(PORTA, 17u, kPORT_MuxAsGpio);
 	GPIO_PinInit(GPIOA, 17u, &gpio_out_config);
+	PORT_SetPinMux(PORTA, 5u, kPORT_MuxAsGpio);
+	GPIO_PinInit(GPIOA, 5u, &gpio_out_config);
 
 }
