@@ -51,7 +51,7 @@
 #define BOARD_USES_ADC
 
 #ifndef BOARD_DEBUG_UART_BAUDRATE
-#define BOARD_DEBUG_UART_BAUDRATE 4000000
+#define BOARD_DEBUG_UART_BAUDRATE 1152000
 #endif
 
 /*******************************************************************************
