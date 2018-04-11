@@ -84,6 +84,9 @@ void BOARD_InitPins(void)
 	/* Debug UART3 pinmux config */
 	PORT_SetPinMux(PORTE, 0u, kPORT_MuxAlt3); /* UART4 TX */
 	PORT_SetPinMux(PORTE, 1u, kPORT_MuxAlt3); /* UART4 RX */
+
+	PORT_SetPinMux(PORTE, 4u, kPORT_MuxAlt3); /* UART3 TX */
+	PORT_SetPinMux(PORTE, 5u, kPORT_MuxAlt3); /* UART3 RX */
 //#endif
 
 	/* Resistive Touch panel pinmux config */
