@@ -44,6 +44,7 @@
 #include "fsl_pit.h"
 #include "fsl_dmamux.h"
 #include "fsl_edma.h"
+#include "fsl_uart.h"
 
 /* TODO: insert other definitions and declarations here. */
 #define B_SIZE           400u		/* Internal Buffer size */
@@ -55,6 +56,14 @@
 
 #define DMAChannel_0	 0u			/*DMA Channels*/
 #define DMAChannel_1	 1u
+
+/* UART instance and clock */
+#define DATA_UART UART3
+#define DATA_UART_CLKSRC kCLOCK_BusClk
+#define DATA_UART_CLK_FREQ CLOCK_GetFreq(kCLOCK_BusClk)
+
+/* TX UART message*/
+uint8_t txbuff[] = "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde\r\n";
 
 /* ADC Channels array */
 uint8_t g_ADC_mux[CHANNELS] = {VREFL_CH, VREFH_CH, CHANNEL_12};
@@ -98,10 +107,24 @@ void EDMA_Callback_1(edma_handle_t *handle, void *param, bool transferDone,
  */
 int main(void)
 {
+	uart_config_t config;
+
 	/* Init board hardware. */
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 	BOARD_InitDebugConsole();
+
+	/****************************************
+	 * UART config and init
+	 ****************************************/
+	UART_GetDefaultConfig(&config);
+	config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
+	//config.baudRate_Bps = 9600U;
+	config.enableTx = true;
+	config.enableRx = true;
+
+	UART_Init(DATA_UART, &config, DATA_UART_CLK_FREQ);
+	UART_WriteBlocking(DATA_UART, txbuff, sizeof(txbuff) - 1);
 
 	/****************************************
 	 * ADC Config
@@ -244,6 +267,8 @@ int main(void)
 			if(g_Transfer_Done_ch1) {
 				i = 0;
 				PRINTF("\r\nFinished\r\n");
+
+				UART_WriteBlocking(DATA_UART, g_ADC0_resultBuffer, sizeof(g_ADC0_resultBuffer) - 1);
 
 				for (i = 0; i < B_SIZE; i+2) {
 					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
