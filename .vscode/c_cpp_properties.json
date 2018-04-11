@@ -38,9 +38,14 @@
                 "${workspaceFolder}/board",
                 "${workspaceFolder}/drivers",
                 "${workspaceFolder}/utilities",
-                "${workspaceFolder}/CMSIS"
+                "${workspaceFolder}/CMSIS",
+                "${workspaceFolder}/CMSIS/Include",
+                "${workspaceFolder}/startup"
             ],
-            "defines": [],
+            "defines": [
+                "CPU_MK20DN512VLK10",
+                "__DEBUG"
+            ],
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [

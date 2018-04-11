@@ -43,6 +43,9 @@
 #include "fsl_uart.h"
 
 // Defines
+
+#define USE_BOTH_ADCS // Uncomment if you want to use ADC0 and ADC1 simultaneously
+
 #define ADC_BASE0 ADC0
 #define ADC16_CHANNEL_GROUP 0U
 #define ADC16_USER_CHANNEL 8U /* PTB0, ADC0_SE8 */
@@ -65,88 +68,90 @@ volatile uint32_t g_Adc16ConversionValue1;
 volatile uint32_t g_Adc16InterruptCounter0;
 volatile uint32_t g_Adc16InterruptCounter1;
 
-
 void ADC0_IRQ_HANDLER_FUNC(void)
 {
-    g_Adc16ConversionDoneFlag0 = true;
-    /* Read conversion result to clear the conversion completed flag. */
-    g_Adc16ConversionValue0 = ADC16_GetChannelConversionValue(ADC_BASE0, ADC16_CHANNEL_GROUP);
-    g_Adc16InterruptCounter0++;
+	g_Adc16ConversionDoneFlag0 = true;
+	/* Read conversion result to clear the conversion completed flag. */
+	g_Adc16ConversionValue0 = ADC16_GetChannelConversionValue(ADC_BASE0,
+			ADC16_CHANNEL_GROUP);
+	g_Adc16InterruptCounter0++;
 }
 
 void ADC1_IRQ_HANDLER_FUNC(void)
 {
-    g_Adc16ConversionDoneFlag1 = true;
-    /* Read conversion result to clear the conversion completed flag. */
-    g_Adc16ConversionValue1 = ADC16_GetChannelConversionValue(ADC_BASE1, ADC16_CHANNEL_GROUP);
-    g_Adc16InterruptCounter1++;
+	g_Adc16ConversionDoneFlag1 = true;
+	/* Read conversion result to clear the conversion completed flag. */
+	g_Adc16ConversionValue1 = ADC16_GetChannelConversionValue(ADC_BASE1,
+			ADC16_CHANNEL_GROUP);
+	g_Adc16InterruptCounter1++;
 }
 /*!
  * @brief Application entry point.
  */
-int main(void) {
+int main(void)
+{
 
-    adc16_config_t adc16ConfigStruct;
-    adc16_channel_config_t adc16ChannelConfigStruct;
-    /* Init board hardware. */
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
-    BOARD_InitDebugConsole();
-    EnableIRQ(ADC0_IRQn);
-//    EnableIRQ(ADC1_IRQn);
+	adc16_config_t adc16ConfigStruct;
+	adc16_channel_config_t adc16ChannelConfigStruct;
+	/* Init board hardware. */
+	BOARD_InitPins();
+	BOARD_BootClockRUN();
+	BOARD_InitDebugConsole();
+	EnableIRQ(ADC0_IRQn);
+#ifdef USE_BOTH_ADCS
+	EnableIRQ(ADC1_IRQn);
+#endif
 
-    //PRINTF("\r\nADC16 interrupt Example.\r\n");
+	ADC16_GetDefaultConfig(&adc16ConfigStruct);
+	ADC16_Init(ADC_BASE0, &adc16ConfigStruct);
+#ifdef USE_BOTH_ADCS
+	ADC16_Init(ADC_BASE1, &adc16ConfigStruct);
+#endif
 
-    ADC16_GetDefaultConfig(&adc16ConfigStruct);
-    ADC16_Init(ADC_BASE0, &adc16ConfigStruct);
-//    ADC16_Init(ADC_BASE1, &adc16ConfigStruct);
-    ADC16_EnableHardwareTrigger(ADC_BASE0, false); /* Make sure the software trigger is used. */
-//    ADC16_EnableHardwareTrigger(ADC_BASE1, false); /* Make sure the software trigger is used. */
+	ADC16_EnableHardwareTrigger(ADC_BASE0, false); /* Make sure the software trigger is used. */
+#ifdef USE_BOTH_ADCS
+	ADC16_EnableHardwareTrigger(ADC_BASE1, false); /* Make sure the software trigger is used. */
+#endif
 
+	adc16ChannelConfigStruct.channelNumber = ADC16_USER_CHANNEL;
+	adc16ChannelConfigStruct.enableInterruptOnConversionCompleted = true; /* Enable the interrupt. */
 
-    adc16ChannelConfigStruct.channelNumber = ADC16_USER_CHANNEL;
-    adc16ChannelConfigStruct.enableInterruptOnConversionCompleted = true; /* Enable the interrupt. */
+	g_Adc16InterruptCounter0 = 0U;
+	g_Adc16InterruptCounter1 = 0U;
 
-    g_Adc16InterruptCounter0 = 0U;
-//    g_Adc16InterruptCounter1 = 0U;
+	while(1) {
+		g_Adc16ConversionDoneFlag0 = false;
+#ifdef USE_BOTH_ADCS
 
+		g_Adc16ConversionDoneFlag1 = false;
+#endif
+		/*
+		 When in software trigger mode, each conversion would be launched once calling the "ADC16_ChannelConfigure()"
+		 function, which works like writing a conversion command and executing it. For another channel's conversion,
+		 just to change the "channelNumber" field in channel configuration structure, and call the function
+		 "ADC16_ChannelConfigure()"" again.
+		 Also, the "enableInterruptOnConversionCompleted" inside the channel configuration structure is a parameter for
+		 the conversion command. It takes affect just for the current conversion. If the interrupt is still required
+		 for the following conversion, it is necessary to assert the "enableInterruptOnConversionCompleted" every time
+		 for each command.
+		 */
+		ADC16_SetChannelConfig(ADC_BASE0, ADC16_CHANNEL_GROUP,
+				&adc16ChannelConfigStruct);
+#ifdef USE_BOTH_ADCS
+		ADC16_SetChannelConfig(ADC_BASE1, ADC16_CHANNEL_GROUP, &adc16ChannelConfigStruct);
+#endif
+		while(!g_Adc16ConversionDoneFlag0) {
+		}
+		PRINTF("%d\r\n", g_Adc16ConversionValue0);
+#ifdef USE_BOTH_ADCS
+		while (!g_Adc16ConversionDoneFlag1)
+		{
+		}
+		PRINTF("%d\r\n", g_Adc16ConversionValue1);
 
-    while (1)
-    {
-
-	//GETCHAR();
-        g_Adc16ConversionDoneFlag0 = false;
-//        g_Adc16ConversionDoneFlag1 = false;
-
-        /*
-         When in software trigger mode, each conversion would be launched once calling the "ADC16_ChannelConfigure()"
-         function, which works like writing a conversion command and executing it. For another channel's conversion,
-         just to change the "channelNumber" field in channel configuration structure, and call the function
-         "ADC16_ChannelConfigure()"" again.
-         Also, the "enableInterruptOnConversionCompleted" inside the channel configuration structure is a parameter for
-         the conversion command. It takes affect just for the current conversion. If the interrupt is still required
-         for the following conversion, it is necessary to assert the "enableInterruptOnConversionCompleted" every time
-         for each command.
-        */
-        ADC16_SetChannelConfig(ADC_BASE0, ADC16_CHANNEL_GROUP, &adc16ChannelConfigStruct);
-        //ADC16_SetChannelConfig(ADC_BASE1, ADC16_CHANNEL_GROUP, &adc16ChannelConfigStruct);
-
-        while (!g_Adc16ConversionDoneFlag0)
-        {
-        }
-        PRINTF("%d\r\n", g_Adc16ConversionValue0);
-//        PRINTF("ADC 0 Interrupt Count: %d\r\n", g_Adc16InterruptCounter0);
-
-//        while (!g_Adc16ConversionDoneFlag1)
-//	{
-//	}
-//        PRINTF("ADC 1 Value: %d\r\n", g_Adc16ConversionValue1);
-//        PRINTF("ADC 1 Interrupt Count: %d\r\n", g_Adc16InterruptCounter1);
-//
-//        PRINTF("ADC Channel: %d\r\n", adc16ChannelConfigStruct.channelNumber);
-
+#endif
 //      Change ADC channel
-        adc16ChannelConfigStruct.channelNumber = 11U;
-    }
+//        adc16ChannelConfigStruct.channelNumber = 11U;
+	}
 }
 
