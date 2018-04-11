@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "GDB",
+            "type": "gdb",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "target": "${workspaceRoot}/Debug/k20_main.elf",
+            "gdbpath": "arm-none-eabi-gdb",
+            "autorun": [
+                "target remote 10.22.1.44:3333",
+                "symbol-file ./Debug/k20_main.elf",
+                "load /home/toradex/dev/k20_apalis_tk1_bare_metal/Debug/k20_main.elf",
+                "monitor reset halt",
+                "tbreak main",
+                "monitor reg",
+                "continue",
+                "monitor reset halt\n",
+                "monitor halt\n",
+                "tbreak main\n"
+
+            ]
+        }
+    ]
+}
