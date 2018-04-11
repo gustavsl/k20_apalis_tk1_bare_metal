@@ -218,24 +218,16 @@ int main(void)
 	ADC16_SetChannelConfig( ADC1, 0, &adc16ChannelConfigStruct);
 
 	/****************************************
-	 * LPTMR for ADC HW trigger Config
+	 * PIT for ADC HW trigger Config
 	 ****************************************/
 	pit_config_t pitConfig;
-	/*
-	 * lptmrConfig.timerMode = kLPTMR_TimerModeTimeCounter;
-	 * lptmrConfig.pinSelect = kLPTMR_PinSelectInput_0;
-	 * lptmrConfig.pinPolarity = kLPTMR_PinPolarityActiveHigh;
-	 * lptmrConfig.enableFreeRunning = false;
-	 * lptmrConfig.bypassPrescaler = true;
-	 * lptmrConfig.prescalerClockSource = kLPTMR_PrescalerClock_1;
-	 * lptmrConfig.value = kLPTMR_Prescale_Glitch_0;
-	 */
+
 	PIT_GetDefaultConfig(&pitConfig);
 
-	/* Initialize the LPTMR */
+	/* Initialize PIT */
 	PIT_Init(PIT, &pitConfig);
 
-	/* Set the LPTimer period */
+	/* Set PIT period */
 	PIT_SetTimerPeriod( PIT, kPIT_Chnl_0,
 			USEC_TO_COUNT(2, CLOCK_GetFreq(kCLOCK_CoreSysClk)));
 
@@ -360,12 +352,11 @@ int main(void)
 
 	EDMA_StartTransfer(&g_EDMA_Handle_3);
 
-	/* Start the LPTimer */
+	/* Start PIT */
 	PIT_StartTimer(PIT, kPIT_Chnl_0);
 
 	uint16_t i = 0;
-	//	PRINTF(
-	//			"\r\nCHANNEL_12\t VREFL_CH\t VREFH_CH\r\n--------\t --------\t --------\t\r\n");
+
 	while(1) {
 		if(g_Transfer_Done_ch0) {
 //			PRINTF("%d: %d \t\t", i, g_ADC0_resultBuffer[i++]);
@@ -396,6 +387,8 @@ int main(void)
 			if(g_Transfer_Done_ch3) {
 				i = 0;
 				PRINTF("\r\nFinished ADC1\r\n");
+
+				UART_WriteBlocking(DATA_UART, g_ADC1_resultBuffer, sizeof(g_ADC1_resultBuffer) - 1);
 
 				for (i = 0; i < B_SIZE; i+2) {
 					PRINTF("%d \t\t", g_ADC1_resultBuffer[i++]);
