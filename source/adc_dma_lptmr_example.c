@@ -49,7 +49,6 @@
 
 #define VREFH_CH         29u		/*ADC Channels*/
 #define VREFL_CH		 30u
-#define CHANNEL_12		 12u
 
 #define DMAChannel_0	 0u			/*DMA Channels*/
 #define DMAChannel_1	 1u
@@ -65,7 +64,9 @@
 uint8_t txbuff[] = "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde\r\n";
 
 /* ADC Channels array */
-uint8_t g_ADC_mux[CHANNELS] = {VREFL_CH, VREFH_CH, CHANNEL_12};
+uint8_t g_ADC0_mux[CHANNELS] = {VREFL_CH, VREFH_CH, 12};
+uint8_t g_ADC1_mux[CHANNELS] = {VREFL_CH, VREFH_CH, 17};
+
 /* Internal ADC buffers */
 uint16_t g_ADC0_resultBuffer[B_SIZE] = {0};
 uint16_t g_ADC1_resultBuffer[B_SIZE] = {0};
@@ -156,7 +157,7 @@ int main(void)
 	config.enableRx = true;
 
 	UART_Init(DATA_UART, &config, DATA_UART_CLK_FREQ);
-	UART_WriteBlocking(DATA_UART, txbuff, sizeof(txbuff) - 1);
+	//UART_WriteBlocking(DATA_UART, txbuff, sizeof(txbuff) - 1);
 	
 	/****************************************
 	 * ADC0 Config
@@ -184,7 +185,7 @@ int main(void)
 	ADC16_EnableHardwareTrigger( ADC0, true);
 	ADC16_EnableDMA( ADC0, true);
 
-	adc16ChannelConfigStruct.channelNumber = g_ADC_mux[2];
+	adc16ChannelConfigStruct.channelNumber = g_ADC0_mux[2];
 	adc16ChannelConfigStruct.enableInterruptOnConversionCompleted = true; /* Enable the interrupt. */
 	adc16ChannelConfigStruct.enableDifferentialConversion = false;
 	ADC16_SetChannelConfig( ADC0, 0, &adc16ChannelConfigStruct);
@@ -212,7 +213,7 @@ int main(void)
 	ADC16_EnableHardwareTrigger( ADC1, true);
 	ADC16_EnableDMA( ADC1, true);
 
-	adc16ChannelConfigStruct.channelNumber = g_ADC_mux[2];
+	adc16ChannelConfigStruct.channelNumber = g_ADC1_mux[2];
 	adc16ChannelConfigStruct.enableInterruptOnConversionCompleted = true; /* Enable the interrupt. */
 	adc16ChannelConfigStruct.enableDifferentialConversion = false;
 	ADC16_SetChannelConfig( ADC1, 0, &adc16ChannelConfigStruct);
@@ -294,8 +295,8 @@ int main(void)
 	EDMA_SetCallback(&g_EDMA_Handle_0, EDMA_Callback_0, NULL);
 
 	EDMA_PrepareTransfer(&transferConfig_ch0, /* Prepare TCD for CH0 */
-			&g_ADC_mux[0], /* Source Address (ADC channels array) */
-			sizeof(g_ADC_mux[0]), /* Source width (1 bytes) */
+			&g_ADC0_mux[0], /* Source Address (ADC channels array) */
+			sizeof(g_ADC0_mux[0]), /* Source width (1 bytes) */
 			(uint32_t*)(ADC0->SC1),/* Destination Address (ADC_SC1A_ADCH)*/
 			sizeof(uint8_t), /* Destination width (1 bytes) */
 			sizeof(uint8_t), /* Bytes to transfer each minor loop (1 bytes) */
@@ -336,8 +337,8 @@ int main(void)
 	EDMA_SetCallback(&g_EDMA_Handle_2, EDMA_Callback_2, NULL);
 
 	EDMA_PrepareTransfer(&transferConfig_ch2, /* Prepare TCD for CH0 */
-			&g_ADC_mux[0], /* Source Address (ADC channels array) */
-			sizeof(g_ADC_mux[0]), /* Source width (1 bytes) */
+			&g_ADC1_mux[0], /* Source Address (ADC channels array) */
+			sizeof(g_ADC1_mux[0]), /* Source width (1 bytes) */
 			(uint32_t*)(ADC1->SC1),/* Destination Address (ADC_SC1A_ADCH)*/
 			sizeof(uint8_t), /* Destination width (1 bytes) */
 			sizeof(uint8_t), /* Bytes to transfer each minor loop (1 bytes) */
@@ -369,7 +370,7 @@ int main(void)
 				i = 0;
 				PRINTF("\r\nFinished ADC0\r\n");
 
-				UART_WriteBlocking(DATA_UART, g_ADC0_resultBuffer, sizeof(g_ADC0_resultBuffer) - 1);
+				//UART_WriteBlocking(DATA_UART, g_ADC0_resultBuffer, sizeof(g_ADC0_resultBuffer) - 1);
 
 				for (i = 0; i < B_SIZE; i+2) {
 					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
@@ -388,7 +389,7 @@ int main(void)
 				i = 0;
 				PRINTF("\r\nFinished ADC1\r\n");
 
-				UART_WriteBlocking(DATA_UART, g_ADC1_resultBuffer, sizeof(g_ADC1_resultBuffer) - 1);
+				//UART_WriteBlocking(DATA_UART, g_ADC1_resultBuffer, sizeof(g_ADC1_resultBuffer) - 1);
 
 				for (i = 0; i < B_SIZE; i+2) {
 					PRINTF("%d \t\t", g_ADC1_resultBuffer[i++]);
