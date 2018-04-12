@@ -15,3 +15,12 @@ A Linux Kernel driver abstracts the incoming SPI data from the K20 MCU and makes
 A quick-and-dirty solution for these particular cases is to give up the Linux abstraction features provided by the RTOS firmware and implement an interrupt-driven bare metal application to capture data, store it e.g. in a buffer and send it via the SPI bus.
 
 This project is based on the repository for the default Toradex K20 FreeRTOS firmware linked above. It is based on the Kinetis SDK V2.0.
+
+## How the hell does this work?
+
+Basically, for each ADC peripheral, we're using two DMA channels. Also, a single timer is used to trigger the ADC conversions.
+One DMA channel is responsible for writing the ADC result to memory. Using the DMA Link feature, once the memory is written, another DMA channel changes the ADC channel for the next reading.
+
+For a more in-depth explanation of how this works (for a single ADC peripheral), read [this](https://community.nxp.com/docs/DOC-335320).
+
+We've added the possibility of reading two ADC peripherals (ADC0 and ADC1). Basically, the application flow is "doubled". Since the ADCs and the DMAs are separate peripherals, they all run "in parallel" and use the same timer.
