@@ -44,13 +44,14 @@
 #include "fsl_edma.h"
 #include "fsl_uart.h"
 
-#define B_SIZE           12u		/* Internal Buffer size */
-#define CHANNELS         3u			/* Number of ADC channels*/
+#define CHANNELS         4u				/* Number of ADC channels*/
+#define SAMPLES_PER_CH   10u
+#define B_SIZE           CHANNELS*SAMPLES_PER_CH	/* Internal Buffer size */
 
-#define VREFH_CH         29u		/*ADC Channels*/
-#define VREFL_CH		 30u
+#define VREFH_CH         29u				/*ADC Channels*/
+#define VREFL_CH	 30u
 
-#define DMAChannel_0	 0u			/*DMA Channels*/
+#define DMAChannel_0	 0u				/*DMA Channels*/
 #define DMAChannel_1	 1u
 #define DMAChannel_2	 2u
 #define DMAChannel_3	 3u
@@ -64,8 +65,8 @@
 uint8_t txbuff[] = "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde\r\n";
 
 /* ADC Channels array */
-uint8_t g_ADC0_mux[CHANNELS] = {VREFL_CH, VREFH_CH, 12};
-uint8_t g_ADC1_mux[CHANNELS] = {VREFL_CH, VREFH_CH, 17};
+uint8_t g_ADC0_mux[CHANNELS] = {VREFH_CH, 8, 12, 13};
+uint8_t g_ADC1_mux[CHANNELS] = {VREFH_CH, 7, 9, 17};
 
 /* Internal ADC buffers */
 uint16_t g_ADC0_resultBuffer[B_SIZE] = {0};
@@ -368,14 +369,16 @@ int main(void)
 //			g_Transfer_Done_ch0 = false;
 			if(g_Transfer_Done_ch1) {
 				i = 0;
-				PRINTF("\r\nFinished ADC0\r\n");
+				PRINTF("Finished ADC0\r\n");
 
 				//UART_WriteBlocking(DATA_UART, g_ADC0_resultBuffer, sizeof(g_ADC0_resultBuffer) - 1);
 
 				for (i = 0; i < B_SIZE; i+2) {
+					PRINTF("\r");
 					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
 					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
 					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
+					PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);										PRINTF("%d \t\t", g_ADC0_resultBuffer[i++]);
 					PRINTF("\r\n");
 				}
 				g_Transfer_Done_ch1 = false;
@@ -392,6 +395,8 @@ int main(void)
 				//UART_WriteBlocking(DATA_UART, g_ADC1_resultBuffer, sizeof(g_ADC1_resultBuffer) - 1);
 
 				for (i = 0; i < B_SIZE; i+2) {
+					PRINTF("\r");
+					PRINTF("%d \t\t", g_ADC1_resultBuffer[i++]);
 					PRINTF("%d \t\t", g_ADC1_resultBuffer[i++]);
 					PRINTF("%d \t\t", g_ADC1_resultBuffer[i++]);
 					PRINTF("%d \t\t", g_ADC1_resultBuffer[i++]);
