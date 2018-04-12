@@ -81,9 +81,9 @@ void BOARD_InitPins(void)
 //	PORT_SetPinMux(PORTC, 16u, kPORT_MuxAlt2); /* CAN1 RX */
 
 //#ifdef SDK_DEBUGCONSOLE
-	/* Debug UART3 pinmux config */
-	PORT_SetPinMux(PORTE, 0u, kPORT_MuxAlt3); /* UART4 TX */
-	PORT_SetPinMux(PORTE, 1u, kPORT_MuxAlt3); /* UART4 RX */
+	/* Debug UART1 pinmux config */
+	PORT_SetPinMux(PORTE, 0u, kPORT_MuxAlt3); /* UART1 TX */
+	PORT_SetPinMux(PORTE, 1u, kPORT_MuxAlt3); /* UART1 RX */
 
 	PORT_SetPinMux(PORTE, 4u, kPORT_MuxAlt3); /* UART3 TX */
 	PORT_SetPinMux(PORTE, 5u, kPORT_MuxAlt3); /* UART3 RX */
@@ -107,11 +107,14 @@ void BOARD_InitPins(void)
 	//PORT_SetPinMux(PORTC, 9UL, kPORT_PinDisabledOrAnalog); /* Sense Y- */
 	//GPIO_PinInit(GPIOC, 9u, &gpio_in_config);
 
-	/* Apalis ADC pinmux config */
-	PORT_SetPinMux(PORTB, 0UL, kPORT_PinDisabledOrAnalog); /* ADC0 */
-	PORT_SetPinMux(PORTB, 1UL, kPORT_PinDisabledOrAnalog); /* ADC1 */
-	PORT_SetPinMux(PORTB, 2UL, kPORT_PinDisabledOrAnalog); /* ADC2 */
-	//PORT_SetPinMux(PORTB, 3UL, kPORT_PinDisabledOrAnalog); /* ADC3 */
+	/* ADC pinmux config */
+	PORT_SetPinMux(PORTB, 0UL, kPORT_PinDisabledOrAnalog);  /* ADC0_SE8 */
+	PORT_SetPinMux(PORTB, 2UL, kPORT_PinDisabledOrAnalog);  /* ADC0_SE12 */
+	PORT_SetPinMux(PORTB, 3UL, kPORT_PinDisabledOrAnalog);  /* ADC0_SE13 */
+	PORT_SetPinMux(PORTE, 3UL, kPORT_PinDisabledOrAnalog);  /* ADC1_SE7a */
+	PORT_SetPinMux(PORTB, 1UL, kPORT_PinDisabledOrAnalog);  /* ADC1_SE9 */
+	PORT_SetPinMux(PORTA, 17UL, kPORT_PinDisabledOrAnalog); /* ADC1_SE17 */
+
 
 	/* SPI2 pinmux config */
 	PORT_SetPinMux(PORTB, 21u, kPORT_MuxAlt2); /* SPI2_SCK */
